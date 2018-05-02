@@ -1,0 +1,26 @@
+{
+  "name": "am-ui-elements",
+  "version": "1.0.0",
+  "description": "React UMD library full of components for Access Missouri presentation.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/access-missouri/am-ui-elements.git"
+  },
+  "author": "Nathan Lawrence (nathan@nathanlawrence.org)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/access-missouri/am-ui-elements/issues"
+  },
+  "homepage": "https://github.com/access-missouri/am-ui-elements#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babelify": "^8.0.0",
+    "browserify": "^16.2.0",
+    "graceful-fs": "^4.1.11",
+    "gulp": "^3.9.1"
+  }
+}
