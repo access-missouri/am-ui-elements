@@ -43,7 +43,7 @@ export class QuickSearchResult extends React.Component {
     }
 }
 
-class AMQuickSearch extends React.Component {
+export class AMQuickSearch extends React.Component {
 
     constructor(props){
         super(props);
