@@ -31,13 +31,13 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
-   "browserify": {
-     "transform": [
-         "browserify-global-shim"
-     ]
+  "browserify": {
+    "transform": [
+      "browserify-global-shim"
+    ]
   },
   "browserify-global-shim": {
-     "react": "React",
-     "react-dom": "ReactDOM"
- }
+    "react": "React",
+    "react-dom": "ReactDOM"
+  }
 }
