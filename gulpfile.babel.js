@@ -4,6 +4,7 @@ import babelify from 'babelify';
 import uglify from 'gulp-uglify';
 import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
+import shell from 'gulp-shell';
 
 // Input file.
 var bundler = browserify('src/jsx/app.jsx', {
@@ -31,11 +32,17 @@ function bundle() {
         })
         .pipe(source('bundle.js'))
         .pipe(buffer())
-        //.pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest('public/assets/js'))
     ;
 }
 
 
-gulp.task('transpile', () => bundle());
+gulp.task('js', () => bundle());
+
+gulp.task('upload', shell.task([
+    'aws s3 cp public/assets s3://apps.kbia.org/am-static-assets --recursive --profile kbia'
+]));
+
+gulp.task('deploy', ['js', 'upload']);
 
