@@ -1,4 +1,5 @@
 import gulp from 'gulp';
+import gutil from 'gulp-util';
 import browserify from 'browserify';
 import babelify from 'babelify';
 import uglify from 'gulp-uglify';
@@ -46,3 +47,8 @@ gulp.task('upload', shell.task([
 
 gulp.task('deploy', ['js', 'upload']);
 
+gulp.task('watch',function(){
+    gutil.log('Gulp will say that this task has finished, but don\'t believe its dirty lies.');
+    gutil.log('Hit \^c to actually exit watch mode.');
+    gulp.watch('src/**/*.jsx',['js']);
+});
