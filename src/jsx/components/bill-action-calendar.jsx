@@ -3,17 +3,7 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import * as d3c from 'd3-collection';
 import * as d3a from 'd3-array';
 import * as d3NestSearch from './utils/d3-nest-search';
-
-
-function daysInMonth (month, year) {
-    return new Date(year, month + 1, 0).getDate();
-}
-
-function sanitizeDateTZString(dateIn){
-    let dt = new Date(dateIn);
-    console.log(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`);
-    return `${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`;
-}
+import * as DateTimeUtils from './utils/date-time/index';
 
 export class AMBillActionCalendar extends React.Component {
     constructor(props){
@@ -33,13 +23,14 @@ export class AMBillActionCalendar extends React.Component {
             })
             .entries(this.props.actions);
         nest.forEach(function(d){
-            let dt = new Date(d.key);
+            let dt = DateTimeUtils.stringYMDHyphenatedToDate(d.key);
             // Fun fact: In JavaScript, months are apparently zero indexed.
-            d.date = `${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`;
+            d.date = DateTimeUtils.stringYMDHyphenatedToDate(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`,
+                true);
             d.count = d.value;
         });
 
-        let year = nest[0].date.split("-")[0];
+        let year = nest[0].key.split("-")[0];
 
         let monthlyNestedData = d3c.nest()
             .key(function(d){
@@ -49,14 +40,17 @@ export class AMBillActionCalendar extends React.Component {
             .entries(nest);
 
         let min = d3a.min(monthlyNestedData, function(d){
-            let dt = new Date(d.key);
-            return new Date(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`);
+            let dt = DateTimeUtils.stringYMDHyphenatedToDate(`${d.key}-01`, true);
+            let newDate = DateTimeUtils.stringYMDHyphenatedToDate(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`, true);
+            return newDate;
         });
 
+
         let max = d3a.max(monthlyNestedData, function(d){
-            let dt = new Date(d.key);
-            return new Date(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`);
+            let dt = DateTimeUtils.stringYMDHyphenatedToDate(`${d.key}-01`);
+            return DateTimeUtils.stringYMDHyphenatedToDate(`${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()}`, true);
         });
+
 
         let months = [];
 
@@ -79,12 +73,12 @@ export class AMBillActionCalendar extends React.Component {
                     // Since the generator signposts a day late, we want to make sure we pad that out.
                     // "If we're in January, set the start to the last day of December of last year.
                     // otherwise, we can go with the end of the last month."
-                    monthStart: sanitizeDateTZString(
+                    monthStart: DateTimeUtils.sanitizeDateTZString(
                         (iter.month > 0 ?
-                                `${iter.year}-${iter.month}-${daysInMonth(iter.month-1, iter.year)}` :
-                                `${iter.year-1}-12-${daysInMonth(11, iter.year-1)}`
+                                `${iter.year}-${iter.month}-${DateTimeUtils.daysInMonth(iter.month-1, iter.year)}` :
+                                `${iter.year-1}-12-${DateTimeUtils.daysInMonth(11, iter.year-1)}`
                         )),
-                    monthEnd: sanitizeDateTZString(`${iter.year}-${iter.month + 1}-${daysInMonth(iter.month, iter.year)}`),
+                    monthEnd: DateTimeUtils.sanitizeDateTZString(`${iter.year}-${iter.month + 1}-${DateTimeUtils.daysInMonth(iter.month, iter.year)}`),
                     data: datArr
                 });
 
@@ -111,10 +105,10 @@ export class AMBillActionCalendar extends React.Component {
                     this.state.months.map(function(month, i){
                         return (
                             <div className={"calendar-heatmap-month"}>
-                                <h3>{(new Date(month.monthEnd)).toLocaleString("en-us", {month: 'long', year: 'numeric'})}</h3>
+                                <h3>{(DateTimeUtils.stringYMDHyphenatedToDate(month.monthEnd)).toLocaleString("en-us", {month: 'long', year: 'numeric'})}</h3>
                                 <CalendarHeatmap
-                                    startDate={month.monthStart}
-                                    endDate={month.monthEnd}
+                                    startDate={DateTimeUtils.stringYMDHyphenatedToDate(month.monthStart, true)}
+                                    endDate={DateTimeUtils.stringYMDHyphenatedToDate(month.monthEnd, true)}
                                     values={month.data}
                                     horizontal={false}
                                     monthLabels={false}
